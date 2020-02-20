@@ -21,7 +21,6 @@ mysql-connector, nbt
     );
 
 ## Using the PHP script
-If you wish to use the PHP script to display leader boards you can include it in a PHP page by including it and calling 'display' as shown below.
 
     include "vanilla-mc-leaderboard/vanilla-mc-leaderboard.php";
     vanillaMcLeaderboard::display();
