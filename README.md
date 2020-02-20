@@ -3,14 +3,27 @@
 ## Pip3 packages required
 mysql-connector, nbt
 
-## Database schema
-    `CREATE TABLE leaderboard (`
-	    `id INT(11) auto_increment,`
-	    `uuid VARCHAR(36),`
-	    `score INT(10),`
-	    `time DATETIME,`
-	    `PRIMARY KEY (id)`
-    `);`
+## Database schemas
+    CREATE TABLE leaderboard (
+	    id INT(11) auto_increment,
+	    uuid VARCHAR(36),
+	    score INT(10),
+	    time DATETIME,
+	    PRIMARY KEY (id)
+    );
+
+    CREATE TABLE mcUnameCache (
+        id INT(11) auto_increment,
+        uuid VARCHAR(36),
+        uname VARCHAR(16),
+        time DATETIME DEFAULT current_timestamp(),
+        PRIMARY KEY (id)
+    );
+
+## Using the PHP script
+If you wish to use the PHP script to display leader boards you can include it in a PHP page by including it and calling 'display' as shown below.
+    include "vanilla-mc-leaderboard/vanilla-mc-leaderboard.php";
+    vanillaMcLeaderboard::display();
 
 ## Legal Information
 Copyright (C) 2020 Alexander Theulings, ketchupcomputing.com <[alexander@theulings.com](mailto:alexander@theulings.com)>
