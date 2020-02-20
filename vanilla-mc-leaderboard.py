@@ -97,7 +97,7 @@ if outputHTML:
 
     topScores = "Scores as of " + fullDate + " UTC<br><hr><br>" + topScores
     if displayPoweredBy:
-        topScores = topScores + "<br><p style=\"font-size: small\">Powered by <a href=\"https://ketchupcomputing.com/projects/mc-leaderboard\">vanilla-mc-leaderboard</a></p>."
+        topScores = topScores + "<br><p style=\"font-size: small\">Powered by <a href=\"https://ketchupcomputing.com/projects/mc-leaderboard\">vanilla-mc-leaderboard</a>.</p>"
 
     os.chdir(siteDir)
     f = open("latest.html", "w")
