@@ -68,7 +68,7 @@ class vanillaMcLeaderboard{
         $dbConn->close();
 
         if (self::displayPoweredBy){
-            echo "<br><p style=\"font-size: small\">Powered by <a href=\"https://ketchupcomputing.com/projects/mc-leaderboard\">vanilla-mc-leaderboard</a>.</p>";
+            echo "<br><p style=\"font-size: small\">Powered by <a href=\"https://ketchupcomputing.com/projects/mc-leaderboard\" target=\"_blank\">vanilla-mc-leaderboard</a>.</p>";
         }
     }
 
