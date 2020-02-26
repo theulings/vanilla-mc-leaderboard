@@ -25,6 +25,7 @@ class vanillaMcLeaderboard{
     private const mysqlUname = "database.username";
     private const mysqlPword = "database.password";
     private const mysqlDB = "database.name";
+    private const resultCount = 25;
     private const cacheFor = 168;
     private const displayPoweredBy = true;
 
@@ -52,7 +53,7 @@ class vanillaMcLeaderboard{
         $stmt->close();
 
         //Get leaderboard
-        $stmt = $dbConn->prepare("SELECT `uuid`, `score` FROM `leaderboard` WHERE `time`=? ORDER BY `score` DESC LIMIT 10");
+        $stmt = $dbConn->prepare("SELECT `uuid`, `score` FROM `leaderboard` WHERE `time`=? ORDER BY `score` DESC LIMIT " . self::resultCount);
         $stmt->bind_param("s", $timestamp);
         $stmt->execute();
         $results = $stmt->get_result();
