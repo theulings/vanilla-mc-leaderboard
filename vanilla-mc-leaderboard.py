@@ -97,6 +97,8 @@ fullDate = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 #Download player files and extract scores
 for listing in fileList:
+    if listing.endswith(".dat_old"):
+        continue
     with open(listing, 'wb') as fp:
         ftp.retrbinary('RETR ' + listing, fp.write)
     nbtfile = nbt.nbt.NBTFile(listing,'rb')
