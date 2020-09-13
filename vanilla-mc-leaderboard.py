@@ -32,10 +32,12 @@ sqlUname = "database.username"
 sqlPword = "database.password"
 sqlDB = "database.name"
 sqlTableName = "leaderboard"
+minimumScoreThreshold = 16
 
 import datetime
 import nbt
 import os
+import shutil
 import time
 from ftplib import FTP
 import mysql.connector
@@ -50,7 +52,6 @@ ftp = FTP(ftpAddr)
 ftp.login(ftpUname, ftpPword)
 ftp.cwd(ftpUserDir)
 fileList = ftp.nlst()
-scoreMap = {};
 
 #Connect to database if enabled
 connection = mysql.connector.connect(host=sqlAddr, database=sqlDB, user=sqlUname, password=sqlPword)
@@ -66,10 +67,15 @@ for listing in fileList:
     with open(listing, 'wb') as fp:
         ftp.retrbinary('RETR ' + listing, fp.write)
     nbtfile = nbt.nbt.NBTFile(listing,'rb')
-    scoreMap[listing] = str(nbtfile["Score"])
+    if int(str(nbtfile["Score"])) < minimumScoreThreshold:
+        continue
     cursor.execute("INSERT INTO " + sqlTableName + " (uuid, score, time) VALUES (%s, %s, %s)",
                             [listing.replace(".dat", ""), int(str(nbtfile["Score"])), fullDate])
 
 connection.commit()
 cursor.close()
 connection.close()
+
+#Delete working directory
+os.chdir("..")
+shutil.rmtree(fullWorkingDir)
