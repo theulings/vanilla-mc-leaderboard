@@ -15,32 +15,38 @@
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
 #Documentation for this file can be found at https://ketchupcomputing.com/projects/mc-leaderboard/
-
-#Directory Settings
-localWorkingDir = "/tmp/";
-dirPrefix = "MCDataParse"
-
-#Minecraft server settings
-ftpAddr = "1.2.3.4"
-ftpUname = "ftp.username"
-ftpPword = "ftp.passowrd"
-ftpUserDir = "/world/playerdata/"
-
-#Output to SQL settings
-sqlAddr = "localhost"
-sqlUname = "database.username"
-sqlPword = "database.password"
-sqlDB = "database.name"
-sqlTableName = "leaderboard"
-minimumScoreThreshold = 16
+#
 
 import datetime
 import nbt
 import os
 import shutil
+import json
 import time
 from ftplib import FTP
 import mysql.connector
+
+with open('vanilla-mc-leaderboard-config.json') as json_file:
+    data = json.load(json_file)
+
+    #Minecraft server settings
+    ftpAddr = data['ftp']["address"]
+    ftpUname = data['ftp']["username"]
+    ftpPword = data['ftp']["password"]
+    ftpUserDir = data['ftp']["user_directory"]
+    #Output to SQL settings
+    sqlAddr = data["sql"]["address"]
+    sqlUname = data["sql"]["username"]
+    sqlPword = data["sql"]["password"]
+    sqlDB = data["sql"]["name"]
+    #Directory Settings
+    localWorkingDir = data["working_directory"]["path"]
+    dirPrefix = data["working_directory"]["prefix"]
+    #Score record settings
+    keepScoreRecords = data["score_records"]["keep_score_records"]
+    if keepScoreRecords:
+        sqlTableName = data["score_records"]["sql_table_name"]
+        minimumScoreThreshold = data["score_records"]["minimum_score"]
 
 #Create a directory to work in
 fullWorkingDir = localWorkingDir + dirPrefix + str(time.time())
@@ -67,9 +73,10 @@ for listing in fileList:
     with open(listing, 'wb') as fp:
         ftp.retrbinary('RETR ' + listing, fp.write)
     nbtfile = nbt.nbt.NBTFile(listing,'rb')
-    if int(str(nbtfile["Score"])) < minimumScoreThreshold:
-        continue
-    cursor.execute("INSERT INTO " + sqlTableName + " (uuid, score, time) VALUES (%s, %s, %s)",
+    if keepScoreRecords:
+        if int(str(nbtfile["Score"])) < minimumScoreThreshold:
+            continue
+        cursor.execute("INSERT INTO " + sqlTableName + " (uuid, score, time) VALUES (%s, %s, %s)",
                             [listing.replace(".dat", ""), int(str(nbtfile["Score"])), fullDate])
 
 connection.commit()

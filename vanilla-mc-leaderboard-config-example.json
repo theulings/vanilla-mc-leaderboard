@@ -1,0 +1,23 @@
+{
+    "ftp": {
+        "address": "localhost",
+        "username": "ftp.username",
+        "password": "ftp.password",
+        "user_directory": "/world/playerdata/"
+    },
+    "sql": {
+        "address": "localhost",
+        "username": "database.username",
+        "password": "database.password",
+        "name": "database.name"
+    },
+    "working_directory": {
+        "path": "/tmp/",
+        "prefix": "MCDataParse"
+    },
+    "score_records": {
+        "keep_score_records": true,
+        "minimum_score": 16,
+        "sql_table_name": "database.table.name"
+    }
+}
