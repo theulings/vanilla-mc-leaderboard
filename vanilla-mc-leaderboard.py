@@ -26,6 +26,30 @@ import time
 from ftplib import FTP
 import mysql.connector
 
+class itemPair:
+    def __init__(self, setMcItemName, setValue):
+        self.mcItemName = setMcItemName
+        self.value = setValue
+
+class itemSet:
+    def __init__(self, setStoreId, setMinimumCount, setCheckInvent, setCheckEnders, setCheckShulkers, setPairs):
+        self.storeId = setStoreId
+        self.minimumCount = setMinimumCount
+        self.checkInvent = setCheckInvent
+        self.checkEnders = setCheckEnders
+        self.checkShulkers = setCheckShulkers
+        self.pairs = setPairs
+
+def scanStorageFor(storage, forItemName,  checkShulkers):
+    count = 0
+    for slot in storage:
+        if str(slot["id"]) == forItemName:
+            count += int(str(slot["Count"]))
+        if checkShulkers and str(slot["id"]) == "minecraft:shulker_box":
+            if "tag" in slot:
+                count += scanStorageFor(slot["tag"]["BlockEntityTag"]["Items"], forItemName, checkShulkers)
+    return count
+
 with open('vanilla-mc-leaderboard-config.json') as json_file:
     data = json.load(json_file)
 
@@ -47,6 +71,14 @@ with open('vanilla-mc-leaderboard-config.json') as json_file:
     if keepScoreRecords:
         sqlTableName = data["score_records"]["sql_table_name"]
         minimumScoreThreshold = data["score_records"]["minimum_score"]
+
+    itemRecordSqlTable = data["item_record_sql_table_name"]
+    itemSets = []
+    for record in data["item_record_sets"]:
+        itemPairs = []
+        for pair in record["item_pairs"]:
+            itemPairs.append(itemPair(pair["name"], pair["value"]))
+        itemSets.append(itemSet(record["store_id"], record["minimum_count"], record["check_inventory"], record["check_ender_chest"], record["check_shulkers"], itemPairs))
 
 #Create a directory to work in
 fullWorkingDir = localWorkingDir + dirPrefix + str(time.time())
@@ -74,10 +106,19 @@ for listing in fileList:
         ftp.retrbinary('RETR ' + listing, fp.write)
     nbtfile = nbt.nbt.NBTFile(listing,'rb')
     if keepScoreRecords:
-        if int(str(nbtfile["Score"])) < minimumScoreThreshold:
-            continue
-        cursor.execute("INSERT INTO " + sqlTableName + " (uuid, score, time) VALUES (%s, %s, %s)",
-                            [listing.replace(".dat", ""), int(str(nbtfile["Score"])), fullDate])
+        if int(str(nbtfile["Score"])) >= minimumScoreThreshold:
+            cursor.execute("INSERT INTO " + sqlTableName + " (uuid, score, time) VALUES (%s, %s, %s)", [listing.replace(".dat", ""), int(str(nbtfile["Score"])), fullDate])
+
+    for itemSet in itemSets:
+        itemCount = 0
+        for itemPair in itemSet.pairs:
+            if itemSet.checkInvent:
+                itemCount += scanStorageFor(nbtfile["Inventory"], itemPair.mcItemName, itemSet.checkShulkers) * itemPair.value
+            if itemSet.checkEnders:
+                itemCount += scanStorageFor(nbtfile["EnderItems"], itemPair.mcItemName, itemSet.checkShulkers) * itemPair.value
+
+        if itemCount >= itemSet.minimumCount:
+            cursor.execute("INSERT INTO " + itemRecordSqlTable + " (script_id, uuid, count, time) VALUES (%s, %s, %s, %s)", [itemSet.storeId, listing.replace(".dat", ""), itemCount, fullDate])
 
 connection.commit()
 cursor.close()

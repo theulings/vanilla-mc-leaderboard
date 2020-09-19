@@ -19,5 +19,38 @@
         "keep_score_records": true,
         "minimum_score": 16,
         "sql_table_name": "database.table.name"
-    }
+    },
+    "item_record_sql_table_name": "database.table.name",
+    "item_record_sets": [
+        {
+            "store_id": "1",
+            "minimum_count": 0,
+            "check_inventory": true,
+            "check_ender_chest": true,
+            "check_shulkers": true,
+            "item_pairs": [
+                {
+                    "name": "minecraft:diamond",
+                    "value": 1
+                },
+                {
+                    "name": "minecraft:diamond_block",
+                    "value": 9
+                }
+            ]
+        },
+        {
+            "store_id": "2",
+            "minimum_count": 10,
+            "check_inventory": true,
+            "check_ender_chest": true,
+            "check_shulkers": true,
+            "item_pairs": [
+                {
+                "name": "minecraft:dirt",
+                "value": 1
+                }
+            ]
+        }
+    ]
 }
