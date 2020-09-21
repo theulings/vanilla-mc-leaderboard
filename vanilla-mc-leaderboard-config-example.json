@@ -9,21 +9,25 @@
         "address": "localhost",
         "username": "database.username",
         "password": "database.password",
-        "name": "database.name"
+        "name": "database.name",
+        "main_table_name": "database.table.name"
     },
     "working_directory": {
         "path": "/tmp/",
         "prefix": "MCDataParse"
     },
-    "score_records": {
-        "keep_score_records": true,
-        "minimum_score": 16,
+    "username_records": {
+        "cache_hours": 168,
         "sql_table_name": "database.table.name"
     },
-    "item_record_sql_table_name": "database.table.name",
+    "score_records": {
+        "keep_score_records": true,
+        "store_id": 0,
+        "minimum_score": 16
+    },
     "item_record_sets": [
         {
-            "store_id": "1",
+            "store_id": 1,
             "minimum_count": 0,
             "check_inventory": true,
             "check_ender_chest": true,
@@ -40,7 +44,7 @@
             ]
         },
         {
-            "store_id": "2",
+            "store_id": 2,
             "minimum_count": 10,
             "check_inventory": true,
             "check_ender_chest": true,

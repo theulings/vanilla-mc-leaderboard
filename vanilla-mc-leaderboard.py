@@ -63,14 +63,14 @@ with open('vanilla-mc-leaderboard-config.json') as json_file:
     sqlUname = data["sql"]["username"]
     sqlPword = data["sql"]["password"]
     sqlDB = data["sql"]["name"]
+    sqlMainTableName = data["sql"]["main_table_name"]
     #Directory Settings
     localWorkingDir = data["working_directory"]["path"]
     dirPrefix = data["working_directory"]["prefix"]
     #Score record settings
     keepScoreRecords = data["score_records"]["keep_score_records"]
-    if keepScoreRecords:
-        sqlTableName = data["score_records"]["sql_table_name"]
-        minimumScoreThreshold = data["score_records"]["minimum_score"]
+    scoreRecordId = data["score_records"]["store_id"]
+    minimumScoreThreshold = data["score_records"]["minimum_score"]
 
     itemRecordSqlTable = data["item_record_sql_table_name"]
     itemSets = []
@@ -107,7 +107,7 @@ for listing in fileList:
     nbtfile = nbt.nbt.NBTFile(listing,'rb')
     if keepScoreRecords:
         if int(str(nbtfile["Score"])) >= minimumScoreThreshold:
-            cursor.execute("INSERT INTO " + sqlTableName + " (uuid, score, time) VALUES (%s, %s, %s)", [listing.replace(".dat", ""), int(str(nbtfile["Score"])), fullDate])
+            cursor.execute("INSERT INTO " + sqlMainTableName + " (script_id, uuid, count, time) VALUES (%s, %s, %s, %s)", [scoreRecordId, listing.replace(".dat", ""), int(str(nbtfile["Score"])), fullDate])
 
     for itemSet in itemSets:
         itemCount = 0
@@ -118,7 +118,7 @@ for listing in fileList:
                 itemCount += scanStorageFor(nbtfile["EnderItems"], itemPair.mcItemName, itemSet.checkShulkers) * itemPair.value
 
         if itemCount >= itemSet.minimumCount:
-            cursor.execute("INSERT INTO " + itemRecordSqlTable + " (script_id, uuid, count, time) VALUES (%s, %s, %s, %s)", [itemSet.storeId, listing.replace(".dat", ""), itemCount, fullDate])
+            cursor.execute("INSERT INTO " + sqlMainTableName + " (script_id, uuid, count, time) VALUES (%s, %s, %s, %s)", [itemSet.storeId, listing.replace(".dat", ""), itemCount, fullDate])
 
 connection.commit()
 cursor.close()
