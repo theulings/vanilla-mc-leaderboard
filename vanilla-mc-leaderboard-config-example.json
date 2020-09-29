@@ -12,6 +12,12 @@
         "name": "database.name",
         "main_table_name": "database.table.name"
     },
+    "html_output": {
+        "pre": "Records as of %t UTC<br><hr><br>",
+        "row": "%p: %u - %c<BR>",
+        "post": "",
+        "display_powered_by": true
+    },
     "working_directory": {
         "path": "/tmp/",
         "prefix": "MCDataParse"
